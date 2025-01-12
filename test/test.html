@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Coup Game Test</title>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  </head>
+  <body>
+    <h1>Coup Game Test Client</h1>
+    <div>
+      <input type="text" id="gameId" placeholder="Game ID" />
+      <input type="text" id="playerName" placeholder="Player Name" />
+      <button onclick="joinGame()">Join Game</button>
+      <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <div
+      style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px"
+    >
+      <h3>Basic Actions</h3>
+      <button onclick="takeAction('income')">Income (+1)</button>
+      <button onclick="takeAction('foreign_aid')">Foreign Aid (+2)</button>
+
+      <h3>Character Actions</h3>
+      <button onclick="takeAction('tax')">Duke: Tax (+3)</button>
+      <button onclick="takeTargetedAction('steal')">
+        Captain: Steal (2 from target)
+      </button>
+      <button onclick="takeTargetedAction('assassinate')">
+        Assassin: Assassinate (-3)
+      </button>
+      <button onclick="takeAction('exchange')">Ambassador: Exchange</button>
+
+      <h3>Special Actions</h3>
+      <button onclick="takeTargetedAction('coup')">Coup (-7)</button>
+    </div>
+
+    <div
+      id="messages"
+      style="margin-top: 20px; border-top: 1px solid #ccc"
+    ></div>
+
+    <script>
+      console.log("Script starting...");
+      const socket = io("http://localhost:3001");
+      let currentGameId = "";
+
+      function joinGame() {
+        const gameId = document.getElementById("gameId").value;
+        const playerName = document.getElementById("playerName").value;
+        currentGameId = gameId;
+        socket.emit("joinGame", gameId, playerName);
+      }
+
+      function startGame() {
+        socket.emit("startGame", currentGameId);
+      }
+
+      function takeAction(actionType) {
+        socket.emit("playAction", currentGameId, { type: actionType });
+      }
+
+      function takeTargetedAction(actionType) {
+        const targetId = prompt("Enter target player ID:");
+        if (targetId) {
+          socket.emit("playAction", currentGameId, {
+            type: actionType,
+            to: targetId,
+          });
+        }
+      }
+
+      // Socket event listeners
+      socket.on("connect", () => {
+        console.log("Socket connected!", socket.id);
+        addMessage("Connected! Your ID: " + socket.id);
+      });
+
+      socket.on("playerJoined", (data) => {
+        addMessage(
+          `Player ${data.playerName} (${data.playerId}) joined. Total players: ${data.playerCount}`
+        );
+      });
+
+      socket.on("gameStarted", (data) => {
+        addMessage(`Game started! First player: ${data.firstPlayer}`);
+      });
+
+      socket.on("dealCards", (data) => {
+        addMessage(
+          `Your cards: ${data.cards.join(", ")}. Coins: ${data.coins}`
+        );
+      });
+
+      socket.on("gameUpdate", (data) => {
+        addMessage(`Action: ${data.action.type} by ${data.action.from}`);
+        if (data.action.to) {
+          addMessage(`Target: ${data.action.to}`);
+        }
+        addMessage(`Next player: ${data.nextPlayer}`);
+        addMessage("Players: " + JSON.stringify(data.players));
+      });
+
+      function addMessage(text) {
+        const messages = document.getElementById("messages");
+        messages.innerHTML = `<p>${text}</p>` + messages.innerHTML;
+      }
+    </script>
+  </body>
+</html>
