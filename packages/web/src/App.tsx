@@ -8,6 +8,7 @@ import "@/App.css";
 import { GameView } from "@/components/game/GameView";
 import { GameState } from "@/types/game";
 import { Character, Player } from "@coup/shared";
+import { GameMenu } from "./components/game/GameMenu";
 
 function App() {
   const socket = useSocket();
@@ -113,10 +114,24 @@ function App() {
     currentTurn: 1,
   };
 
-  if ((gameState === GameState.PLAYING && currentPlayer) || true) {
+  if (gameState === GameState.PLAYING && currentPlayer) {
     return <GameView players={3} />;
   }
-  return <div className="bg-red-500 w-full h-full">home?</div>;
+  return (
+    <GameMenu
+      socket={socket}
+      isHost={isHost}
+      gameId={gameId}
+      playerName={playerName}
+      gameStatus={gameStatus}
+      players={players}
+      onPlayerNameChange={setPlayerName}
+      onGameIdChange={setGameId}
+      onCreateGame={handleCreateGame}
+      onJoinGame={handleJoinGame}
+      onStartGame={handleStartGame}
+    />
+  );
 }
 
 export default App;

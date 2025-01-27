@@ -8,12 +8,7 @@ type Props = {
 };
 
 export const TableView = ({ numOfPlayers }: Props) => {
-  const mockCards = [
-    Character.DUKE,
-    Character.CAPTAIN,
-    Character.DUKE,
-    Character.AMBASSADOR,
-  ];
+  const mockCards = [Character.DUKE, Character.CAPTAIN];
 
   const getPlayerPositions = (playerCount: number) => {
     const positions = {

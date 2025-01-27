@@ -7,21 +7,32 @@ interface PlayerHandProps {
   cards: Character[];
 }
 
-const HOVER_SPREAD_FACTOR = 20;
-const DEFAULT_SPREAD_FACTOR = 10;
+const HOVER_SPREAD_FACTOR = 80;
+const DEFAULT_SPREAD_FACTOR = 20;
 
 export const PlayerHand = ({ cards }: PlayerHandProps) => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
+  const spreadFactor =
+    hoveredCard !== null ? HOVER_SPREAD_FACTOR : DEFAULT_SPREAD_FACTOR;
+  const totalSpreadWidth = spreadFactor * (cards.length - 1);
+  const centerOffset = totalSpreadWidth / 2;
+
+  // Calculate the middle index for rotation reference
+  const middleIndex = (cards.length - 1) / 2;
+
   return (
-    <div className="relative flex items-center justify-center w-full h-[280px] bg-red-500">
+    <div className="relative flex items-center justify-center w-full h-[300px] bg-red-500">
       {cards.map((card, index) => {
-        const spreadFactor =
-          hoveredCard !== null ? HOVER_SPREAD_FACTOR : DEFAULT_SPREAD_FACTOR;
         const isHovered = hoveredCard === index;
+
+        // Calculate rotation based on distance from center
+        const rotationFactor = 20; // Adjust this to control curve intensity
+        const rotationAngle = (index - middleIndex) * rotationFactor;
+
         return (
           <CharacterCard
-            key={"key" + index}
+            key={"card-" + index}
             onMouseEnter={() => setHoveredCard(index)}
             onMouseLeave={() => setHoveredCard(null)}
             character={card}
@@ -30,13 +41,11 @@ export const PlayerHand = ({ cards }: PlayerHandProps) => {
               ["bg-red-500", "bg-blue-500", "bg-purple-500"][index % 3]
             )}
             style={{
-              transform: `rotate(-${
-                spreadFactor * (cards.length - index - 1)
-              }deg) translateX(${
-                -spreadFactor * (cards.length - index - 1)
+              transform: `rotate(${rotationAngle}deg) translateX(${
+                -centerOffset + spreadFactor * index
               }px) translateY(${isHovered ? "-10px" : "0"})`,
               transformOrigin: "50% 100%",
-              zIndex: isHovered ? index + 2 : index,
+              zIndex: index,
             }}
           />
         );

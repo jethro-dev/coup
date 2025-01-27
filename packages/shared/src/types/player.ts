@@ -7,8 +7,9 @@ export interface Player {
 
   // Game state
   coins: number;
-  cards: Character[]; // Their influence cards
+  influences: Character[]; // Their influence cards
   isAlive: boolean; // False when they lose all influences
+  isEliminated: boolean;
 
   // Optional properties for more game states
   isReady?: boolean; // For lobby state

@@ -8,6 +8,11 @@ export enum Character {
   CONTESSA = "contessa",
 }
 
+export enum PlayerStatus {
+  ALIVE = "ALIVE",
+  DEAD = "DEAD",
+}
+
 export const ALL_CHARACTERS = [
   Character.DUKE,
   Character.ASSASSIN,

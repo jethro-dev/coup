@@ -7,8 +7,10 @@
     "packages/*"
   ],
   "scripts": {
-    "dev-server": "ts-node-dev --respawn --transpile-only packages/server/src/index.ts",
-    "dev-client": "pnpm --filter web dev",
+    "dev:server": "ts-node-dev --respawn --transpile-only packages/server/src/index.ts",
+    "dev:client": "pnpm --filter web dev",
+    "dev-shared": "pnpm --filter shared dev",
+    "dev": "concurrently \"pnpm dev-shared\" \"pnpm dev-server\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,6 +18,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^22.10.5",
+    "concurrently": "^9.1.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"
   }

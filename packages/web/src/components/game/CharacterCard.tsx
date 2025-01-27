@@ -70,6 +70,7 @@ export const CharacterCard = ({
         src={config.image}
         alt={`${character} card`}
         className="w-full h-full"
+        draggable={false}
       />
     </button>
   );
